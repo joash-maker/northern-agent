@@ -1,1 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Northern Lift Removal — AI Chat Demo</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+      background: #f9f9f9;
+      color: #1a1a1a;
+    }
+
+    .header {
+      background: #000;
+      padding: 20px;
+      text-align: center;
+      border-bottom: 4px solid #FF6600;
+    }
+
+    .header h1 {
+      color: #fff;
+      font-size: 24px;
+      margin-bottom: 4px;
+    }
+
+    .header p {
+      color: #ccc;
+      font-size: 14px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    .hero {
+      background: #fff;
+      border-radius: 8px;
+      padding: 40px;
+      margin-bottom: 40px;
+      border-left: 4px solid #FF6600;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .hero h2 {
+      font-size: 28px;
+      margin-bottom: 16px;
+      color: #1a1a1a;
+    }
+
+    .hero p {
+      font-size: 16px;
+      line-height: 1.6;
+      color: #555;
+      margin-bottom: 24px;
+    }
+
+    .features {
+      list-style: none;
+      margin: 24px 0;
+    }
+
+    .features li {
+      padding: 12px 0;
+      padding-left: 32px;
+      position: relative;
+      color: #555;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .features li:before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: #FF6600;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    #chat-launcher {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: #FF6600;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(255, 102, 0, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 99;
+      transition: all 0.3s ease;
+    }
+
+    #chat-launcher:hover {
+      background: #e55a00;
+      transform: scale(1.1);
+    }
+
+    #chat-launcher svg {
+      width: 28px;
+      height: 28px;
+      stroke: white;
+    }
+
+    #chat-window {
+      position: fixed;
+      bottom: 100px;
+      right: 24px;
+      width: 380px;
+      height: 600px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.95) translateY(20px);
+      transition: all 0.3s ease;
+      z-index: 100;
+      overflow: hidden;
+    }
+
+    #chat-window.open {
+      opacity: 1;
+      pointer-events: all;
+      transform: scale(1) translateY(0);
+    }
+
+    #chat-header {
+      background: #000;
+      border-bottom: 3px solid #FF6600;
+      padding: 16px;
+      color: white;
+    }
+
+    #chat-header h3 {
+      font-size: 16px;
+      margin-bottom: 4px;
+    }
+
+    #chat-header p {
+      font-size: 12px;
+      color: #ccc;
+    }
+
+    #chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      background: #fff;
+    }
+
+    .message {
+      margin-bottom: 12px;
+      display: flex;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .message.bot {
+      justify-content: flex-start;
+    }
+
+    .message.user {
+      justify-content: flex-end;
+    }
+
+    .message-bubble {
+      max-width: 80%;
+      padding: 12px 16px;
+      border-radius: 12px;
+      word-wrap: break-word;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .message.bot .message-bubble {
+      background: #f0f0f0;
+      color: #1a1a1a;
+      border-bottom-left-radius: 4px;
+    }
+
+    .message.user .message-bubble {
+      background: #FF6600;
+      color: white;
+      border-bottom-right-radius: 4px;
+    }
+
+    .typing {
+      display: flex;
+      gap: 4px;
+      padding: 12px 16px;
+    }
+
+    .typing-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #FF6600;
+      animation: bounce 1.4s infinite;
+    }
+
+    .typing-dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing-dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes bounce {
+      0%, 60%, 100% {
+        opacity: 0.3;
+        transform: translateY(0);
+      }
+      30% {
+        opacity: 1;
+        transform: translateY(-8px);
+      }
+    }
+
+    #lead-banner {
+      display: none;
+      background: #FF6600;
+      color: white;
+      padding: 12px 16px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 13px;
+      border-radius: 8px;
+      margin: 8px 0;
+    }
+
+    #lead-banner.show {
+      display: block;
+      animation: slideIn 0.3s ease;
+    }
+
+    #chat-input-area {
+      padding: 12px;
+      background: #f9f9f9;
+      border-top: 1px solid #e0e0e0;
+    }
+
+    #chat-form {
+      display: flex;
+      gap: 8px;
+    }
+
+    #chat-input {
+      flex: 1;
+      padding: 10px 12px;
+      border: 1px solid #ddd;
+      border-radius: 20px;
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    #chat-input:focus {
+      border-color: #FF6600;
+    }
+
+    #send-btn {
+      background: #FF6600;
+      border: none;
+      color: white;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+
+    #send-btn:hover {
+      background: #e55a00;
+    }
+
+    #send-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .footer {
+      background: #000;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+      font-size: 12px;
+      border-top: 1px solid #333;
+      margin-top: 40px;
+    }
+
+    .footer a {
+      color: #FF6600;
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 480px) {
+      #chat-window {
+        width: calc(100vw - 32px);
+        height: calc(100vh - 120px);
+        bottom: 80px;
+        right: 16px;
+      }
+
+      .hero {
+        padding: 24px;
+      }
+
+      .hero h2 {
+        font-size: 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Northern Lift Removal</h1>
+    <p>24/7 AI Chat Demo</p>
+  </div>
+
+  <div class="container">
+    <div class="hero">
+      <h2>See Fredi in Action</h2>
+      <p>This demo shows how our 24/7 AI assistant handles customer enquiries for Northern Lift Removal. Ask questions about lift removal, hoardings, shaft painting, or repairs.</p>
+      
+      <ul class="features">
+        <li>Answers customer questions instantly, day and night</li>
+        <li>Qualifies every enquiry (service, urgency, location)</li>
+        <li>Captures complete lead information automatically</li>
+        <li>Routes urgent jobs straight to your phone</li>
+        <li>Works seamlessly on mobile and desktop</li>
+      </ul>
+
+      <p style="font-size: 13px; color: #999; margin-top: 24px;">
+        💬 Open the chat in the bottom-right corner to get started.
+      </p>
+    </div>
+  </div>
+
+  <button id="chat-launcher" title="Open chat">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+    </svg>
+  </button>
+
+  <div id="chat-window">
+    <div id="chat-header">
+      <h3>Northern Lift Removal</h3>
+      <p>Online now • Typically replies instantly</p>
+    </div>
+
+    <div id="chat-messages"></div>
+
+    <div id="lead-banner">✓ Details captured — we'll be in touch shortly.</div>
+
+    <div id="chat-input-area">
+      <form id="chat-form" onsubmit="handleSubmit(event)">
+        <input
+          type="text"
+          id="chat-input"
+          placeholder="Ask about lift removal, pricing…"
+          autocomplete="off"
+          maxlength="500"
+        />
+        <button type="submit" id="send-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="22" y1="2" x2="11" y2="13"/>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div class="footer">
+    Northern Lift Removal | <a href="https://northernliftremoval.co.uk">Visit website</a> | +44 (0)1274 019 094
+  </div>
+
+  <script>
+    let widgetOpen = false;
+    let messages = [];
+    let conversationStarted = false;
+    let leadCaptured = false;
+
+    document.getElementById('chat-launcher').addEventListener('click', toggleWidget);
+
+    function toggleWidget() {
+      widgetOpen = !widgetOpen;
+      const win = document.getElementById('chat-window');
+      const btn = document.getElementById('chat-launcher');
+
+      win.classList.toggle('open', widgetOpen);
+      btn.classList.toggle('open', widgetOpen);
+
+      if (widgetOpen && !conversationStarted) {
+        conversationStarted = true;
+        setTimeout(() => {
+          addBotMessage("Hi there — looking for lift removal, hoardings, shaft painting, or repairs? I can help with any questions about our services and get your enquiry to the team. What do you need?");
+        }, 300);
+      }
+
+      if (widgetOpen) {
+        setTimeout(() => document.getElementById('chat-input').focus(), 350);
+      }
+    }
+
+    function handleSubmit(e) {
+      e.preventDefault();
+      const input = document.getElementById('chat-input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      input.value = '';
+      sendMessage(text);
+    }
+
+    function sendMessage(text) {
+      addUserMessage(text);
+      messages.push({ role: 'user', content: text });
+      showTyping();
+      document.getElementById('send-btn').disabled = true;
+
+      fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text, conversationHistory: messages })
+      })
+        .then(r => r.json())
+        .then(data => {
+          removeTyping();
+          document.getElementById('send-btn').disabled = false;
+
+          let reply = data.message || 'Sorry, something went wrong. Please call us on 01274 019 094.';
+
+          if (data.leadCaptured && !leadCaptured) {
+            leadCaptured = true;
+            document.getElementById('lead-banner').classList.add('show');
+          }
+
+          messages.push({ role: 'assistant', content: reply });
+          addBotMessage(reply);
+        })
+        .catch(() => {
+          removeTyping();
+          document.getElementById('send-btn').disabled = false;
+          addBotMessage('Sorry, I\'m having trouble connecting. Please call us directly on 01274 019 094.');
+        });
+    }
+
+    function addUserMessage(text) {
+      const div = document.createElement('div');
+      div.className = 'message user';
+      div.innerHTML = `<div class="message-bubble">${escapeHtml(text)}</div>`;
+      document.getElementById('chat-messages').appendChild(div);
+      scrollToBottom();
+    }
+
+    function addBotMessage(text) {
+      const div = document.createElement('div');
+      div.className = 'message bot';
+      div.innerHTML = `<div class="message-bubble">${escapeHtml(text)}</div>`;
+      document.getElementById('chat-messages').appendChild(div);
+      scrollToBottom();
+    }
+
+    function showTyping() {
+      const div = document.createElement('div');
+      div.className = 'typing';
+      div.id = 'typing-indicator';
+      div.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+      document.getElementById('chat-messages').appendChild(div);
+      scrollToBottom();
+    }
+
+    function removeTyping() {
+      const typing = document.getElementById('typing-indicator');
+      if (typing) typing.remove();
+    }
+
+    function scrollToBottom() {
+      const messages = document.getElementById('chat-messages');
+      setTimeout(() => {
+        messages.scrollTop = messages.scrollHeight;
+      }, 50);
+    }
+
+    function escapeHtml(text) {
+      const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+      };
+      return text.replace(/[&<>"']/g, m => map[m]);
+    }
+  </script>
+</body>
+</html>
+```
+
+4. Scroll down to **"Commit changes"**
+5. Click **"Commit changes"** (leave message as default)
+
+**Vercel will auto-deploy** within 60 seconds.
+
+---
+
+Once it's done, your demo will be live at:
+```
+https://northern-agent.vercel.app
