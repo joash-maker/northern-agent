@@ -1,0 +1,5 @@
+{
+  "buildCommand": "echo 'Build complete'",
+  "nodeVersion": "20.x"
+}
+```
