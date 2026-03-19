@@ -181,3 +181,4 @@ Return ONLY valid JSON. No explanation, no markdown, no code fences.`;
     return res.status(500).json({ error: "Failed to process request" });
   }
 }
+
