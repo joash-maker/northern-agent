@@ -171,23 +171,12 @@
     }
 
     @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translateY(8px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    .message.bot {
-      justify-content: flex-start;
-    }
-
-    .message.user {
-      justify-content: flex-end;
-    }
+    .message.bot { justify-content: flex-start; }
+    .message.user { justify-content: flex-end; }
 
     .message-bubble {
       max-width: 80%;
@@ -224,23 +213,12 @@
       animation: bounce 1.4s infinite;
     }
 
-    .typing-dot:nth-child(2) {
-      animation-delay: 0.2s;
-    }
-
-    .typing-dot:nth-child(3) {
-      animation-delay: 0.4s;
-    }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
 
     @keyframes bounce {
-      0%, 60%, 100% {
-        opacity: 0.3;
-        transform: translateY(0);
-      }
-      30% {
-        opacity: 1;
-        transform: translateY(-8px);
-      }
+      0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
+      30% { opacity: 1; transform: translateY(-8px); }
     }
 
     #lead-banner {
@@ -252,7 +230,7 @@
       font-weight: 600;
       font-size: 13px;
       border-radius: 8px;
-      margin: 8px 0;
+      margin: 8px;
     }
 
     #lead-banner.show {
@@ -297,16 +275,11 @@
       align-items: center;
       justify-content: center;
       transition: background 0.2s;
+      flex-shrink: 0;
     }
 
-    #send-btn:hover {
-      background: #e55a00;
-    }
-
-    #send-btn:disabled {
-      background: #ccc;
-      cursor: not-allowed;
-    }
+    #send-btn:hover { background: #e55a00; }
+    #send-btn:disabled { background: #ccc; cursor: not-allowed; }
 
     .footer {
       background: #000;
@@ -323,29 +296,24 @@
       text-decoration: none;
     }
 
-    .footer a:hover {
-      text-decoration: underline;
-    }
+    .footer a:hover { text-decoration: underline; }
 
     @media (max-width: 480px) {
       #chat-window {
-        width: calc(100vw - 32px);
-        height: calc(100vh - 120px);
-        bottom: 80px;
-        right: 16px;
+        width: 100vw;
+        height: 100svh;
+        bottom: 0;
+        right: 0;
+        border-radius: 0;
       }
 
-      .hero {
-        padding: 24px;
-      }
-
-      .hero h2 {
-        font-size: 22px;
-      }
+      .hero { padding: 24px; }
+      .hero h2 { font-size: 22px; }
     }
   </style>
 </head>
 <body>
+
   <div class="header">
     <h1>Northern Lift Removal</h1>
     <p>24/7 AI Chat Demo</p>
@@ -353,14 +321,13 @@
 
   <div class="container">
     <div class="hero">
-      <h2>See Fredi in Action</h2>
-      <p>This demo shows how our 24/7 AI assistant handles customer enquiries for Northern Lift Removal. Ask questions about lift removal, hoardings, shaft painting, or repairs.</p>
-      
+      <h2>Meet Northern — Your 24/7 Assistant</h2>
+      <p>Specialist lift removal, hoardings, shaft painting, and repairs across the UK. Northern is available around the clock to answer questions and capture enquiries — even when the team is out on site.</p>
       <ul class="features">
         <li>Answers customer questions instantly, day and night</li>
-        <li>Qualifies every enquiry (service, urgency, location)</li>
+        <li>Qualifies every enquiry — service type, urgency, and location</li>
         <li>Captures complete lead information automatically</li>
-        <li>Routes urgent jobs straight to your phone</li>
+        <li>Routes urgent jobs straight to the team</li>
         <li>Works seamlessly on mobile and desktop</li>
       </ul>
     </div>
@@ -375,34 +342,33 @@
   <div id="chat-window">
     <div id="chat-header">
       <h3>Northern Lift Removal</h3>
-      <p>Online now • Typically replies instantly</p>
+      <p>Online now &bull; Typically replies instantly</p>
     </div>
-
     <div id="chat-messages"></div>
-
-    <div id="lead-banner">✓ Details captured — we'll be in touch shortly.</div>
-
+    <div id="lead-banner">&#10003; Details captured — we'll be in touch shortly.</div>
     <div id="chat-input-area">
-      <form id="chat-form" onsubmit="handleSubmit(event)">
+      <div id="chat-form">
         <input
           type="text"
           id="chat-input"
-          placeholder="Ask about lift removal, pricing…"
+          placeholder="Ask about lift removal, repairs, pricing…"
           autocomplete="off"
           maxlength="500"
         />
-        <button type="submit" id="send-btn">
+        <button type="button" id="send-btn" onclick="handleSend()">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <line x1="22" y1="2" x2="11" y2="13"/>
             <polygon points="22 2 15 22 11 13 2 9 22 2"/>
           </svg>
         </button>
-      </form>
+      </div>
     </div>
   </div>
 
   <div class="footer">
-    Northern Lift Removal | <a href="https://northernliftremoval.co.uk" target="_blank">Visit website</a> | +44 (0)1274 019 094
+    Northern Lift Removal &nbsp;|&nbsp;
+    <a href="https://northernliftremoval.co.uk" target="_blank">Visit website</a>
+    &nbsp;|&nbsp; 01274 019 094
   </div>
 
   <script>
@@ -413,18 +379,22 @@
 
     document.getElementById('chat-launcher').addEventListener('click', toggleWidget);
 
+    document.getElementById('chat-input').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        handleSend();
+      }
+    });
+
     function toggleWidget() {
       widgetOpen = !widgetOpen;
       const win = document.getElementById('chat-window');
-      const btn = document.getElementById('chat-launcher');
-
       win.classList.toggle('open', widgetOpen);
-      btn.classList.toggle('open', widgetOpen);
 
       if (widgetOpen && !conversationStarted) {
         conversationStarted = true;
         setTimeout(() => {
-          addBotMessage("Hi there — looking for lift removal, hoardings, shaft painting, or repairs? I can help with any questions about our services and get your enquiry to the team. What do you need?");
+          addBotMessage("Hi there — I'm Northern, the 24/7 assistant for Northern Lift Removal. Whether you need lift removal, hoardings, shaft painting, or repairs, I can help get your enquiry to the right person. What can I help you with today?");
         }, 300);
       }
 
@@ -433,12 +403,10 @@
       }
     }
 
-    function handleSubmit(e) {
-      e.preventDefault();
+    function handleSend() {
       const input = document.getElementById('chat-input');
       const text = input.value.trim();
       if (!text) return;
-
       input.value = '';
       sendMessage(text);
     }
@@ -458,14 +426,11 @@
         .then(data => {
           removeTyping();
           document.getElementById('send-btn').disabled = false;
-
-          let reply = data.message || 'Sorry, something went wrong. Please call us on 01274 019 094.';
-
+          const reply = data.message || 'Sorry, something went wrong. Please call us on 01274 019 094.';
           if (data.leadCaptured && !leadCaptured) {
             leadCaptured = true;
             document.getElementById('lead-banner').classList.add('show');
           }
-
           messages.push({ role: 'assistant', content: reply });
           addBotMessage(reply);
         })
@@ -479,7 +444,7 @@
     function addUserMessage(text) {
       const div = document.createElement('div');
       div.className = 'message user';
-      div.innerHTML = `<div class="message-bubble">${escapeHtml(text)}</div>`;
+      div.innerHTML = '<div class="message-bubble">' + escapeHtml(text) + '</div>';
       document.getElementById('chat-messages').appendChild(div);
       scrollToBottom();
     }
@@ -487,7 +452,7 @@
     function addBotMessage(text) {
       const div = document.createElement('div');
       div.className = 'message bot';
-      div.innerHTML = `<div class="message-bubble">${escapeHtml(text)}</div>`;
+      div.innerHTML = '<div class="message-bubble">' + escapeHtml(text) + '</div>';
       document.getElementById('chat-messages').appendChild(div);
       scrollToBottom();
     }
@@ -502,27 +467,20 @@
     }
 
     function removeTyping() {
-      const typing = document.getElementById('typing-indicator');
-      if (typing) typing.remove();
+      const t = document.getElementById('typing-indicator');
+      if (t) t.remove();
     }
 
     function scrollToBottom() {
-      const messages = document.getElementById('chat-messages');
-      setTimeout(() => {
-        messages.scrollTop = messages.scrollHeight;
-      }, 50);
+      const msgs = document.getElementById('chat-messages');
+      setTimeout(() => { msgs.scrollTop = msgs.scrollHeight; }, 50);
     }
 
     function escapeHtml(text) {
-      const map = {
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#039;'
-      };
+      const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
       return text.replace(/[&<>"']/g, m => map[m]);
     }
   </script>
+
 </body>
 </html>
