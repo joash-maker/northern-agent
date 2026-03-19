@@ -452,9 +452,9 @@
     function addBotMessage(text) {
       const div = document.createElement('div');
       div.className = 'message bot';
-      div.innerHTML = '<div class="message-bubble">' + escapeHtml(text) + '</div>';
+      div.innerHTML = '<div class="message-bubble">' + renderMarkdown(text) + '</div>';
       document.getElementById('chat-messages').appendChild(div);
-      scrollToBottom();
+      scrollToMessage(div);
     }
 
     function showTyping() {
@@ -471,9 +471,21 @@
       if (t) t.remove();
     }
 
+    function scrollToMessage(el) {
+      setTimeout(() => { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50);
+    }
+
     function scrollToBottom() {
       const msgs = document.getElementById('chat-messages');
       setTimeout(() => { msgs.scrollTop = msgs.scrollHeight; }, 50);
+    }
+
+    function renderMarkdown(text) {
+      return escapeHtml(text)
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g, '<em>$1</em>')
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/\n/g, '<br>');
     }
 
     function escapeHtml(text) {
