@@ -1,0 +1,9 @@
+{
+  "name": "northern-agent",
+  "version": "1.0.0",
+  "description": "Northern Lift Removal AI Agent",
+  "private": true,
+  "engines": {
+    "node": "18.x"
+  }
+}
