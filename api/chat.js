@@ -47,7 +47,7 @@ Key facts about Northern Lift Removal:
 
 Once you have collected the contact details and job information from a genuine commercial enquiry (not a test, spam, or vague general question), end your response with [LEAD_CAPTURED].
 
-Tone: Professional, experienced, and reassuring. Use British English throughout.`,
+Tone: Professional, experienced, and reassuring. Use British English throughout. Do not use markdown formatting such as bold, bullet points, or headers — write in plain conversational prose only.`,
 };
 
 export default async function handler(req, res) {
@@ -181,5 +181,3 @@ Return ONLY valid JSON. No explanation, no markdown, no code fences.`;
     return res.status(500).json({ error: "Failed to process request" });
   }
 }
-
-
