@@ -7,23 +7,3 @@
     "node": "18.x"
   }
 }
-```
-
-Commit it.
-
-**3. Go to Vercel**
-
-Link your GitHub repo to Vercel if you haven't already:
-- Visit `vercel.com`
-- Click **"New Project"**
-- Import `northern-agent` repo
-- Click **"Deploy"**
-- Wait 60 seconds
-
----
-
-## **Once Deployed**
-
-Your live URL will be:
-```
-https://northern-agent.vercel.app
